@@ -1,6 +1,6 @@
 class GeoLight {
 
-  HE_Mesh tetrahedronA, tetrahedronB;
+  HE_Mesh tetrahedronA, tetrahedronB, octahedron;
 
   float tetraScale = 1.0;
   float tetraRotate = 0.0;
@@ -32,21 +32,17 @@ class GeoLight {
     noStroke();
     fill(255, 196);
     emissive(255);
-    render.drawFaces(tetrahedronA);
-    render.drawFaces(tetrahedronB);
+    // render.drawFaces(tetrahedronA);
+    // render.drawFaces(tetrahedronB);
+    render.drawFaces(octahedron);
     popMatrix();
   }
   
-  void nextPosition() {
-    nextPositionIndex = (nextPositionIndex + 1) % lightPositions.size();
-    nextPosition = lightPositions.get(nextPositionIndex);
-    //Ani.to(lightPosition, 1.5, "x", nextPosition.x);
-    //Ani.to(lightPosition, 1.5, "y", nextPosition.y);
-    //Ani.to(lightPosition, 1.5, "z", nextPosition.z);
+  void setPosition(PVector position) {
+    nextPosition = position;
     Ani.to(this, 1.5, "lightPositionX", nextPosition.x);
     Ani.to(this, 1.5, "lightPositionY", nextPosition.y);
-    Ani.to(this, 1.5, "lightPositionZ", nextPosition.z);
-    
+    Ani.to(this, 1.5, "lightPositionZ", nextPosition.z);    
   }
   
   PVector getPosition() {
@@ -58,6 +54,7 @@ class GeoLight {
   }
   
   void init() {
+    octahedron = new HE_Mesh(new HEC_Dual(new HE_Mesh(new HEC_Cube().setRadius(10))));
     //tetrahedron = new HE_Mesh(new HEC_Tetrahedron().setRadius(10));
     WB_Point[] points = new WB_Point[4];
     points[0] = new WB_Point(-10, 10, -10);
@@ -73,15 +70,7 @@ class GeoLight {
     tetrahedronA.scale(0.92);
     tetrahedronB.scale(0.92);
     
-    lightPositions = new ArrayList<PVector>();
-    lightPositions.add(new PVector(0, 0, 0));
-    lightPositions.add(new PVector(0, 40, 0));
-    lightPositions.add(new PVector(0, 40, 40));
-    lightPositions.add(new PVector(40, 40, 40));
-    lightPositions.add(new PVector(40, 0, 40));
-    lightPositions.add(new PVector(40, 0, 0));
-    nextPositionIndex = 0;
-    PVector lP = lightPositions.get(nextPositionIndex);
+    PVector lP = new PVector(0, 0, 0);
     lightPositionX = lP.x;
     lightPositionY = lP.y;
     lightPositionZ = lP.z;

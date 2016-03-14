@@ -104,7 +104,8 @@ void updateLightsAndCamera(PVector geoLightPosition) {
 }
 
 void nextPosition() {
-  geoLight.nextPosition();
+  threadLattice.expandLattice();
+  geoLight.setPosition(threadLattice.getHeadPosition());
   offsetX = -offsetX;
 }
 
@@ -131,6 +132,7 @@ void oscEvent(OscMessage theOscMessage) {
     particleVelocityMult = map(floatVal, 0, 1, 1, 15);
   }
   else if (addr.equals("/FromVDMX/Slider4")) {
+    offsetZ = map(floatVal, 0, 1, 10, 500);
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
   }

@@ -1,111 +1,194 @@
 class ThreadLattice {
-  HE_Mesh mesh;
-  HE_Selection selection;
-  HE_Face face;
-  HEM_Extrude extrude;
+  HE_Mesh mMesh;
+  HE_DynamicMesh mDynMesh;
+  HE_Selection mSelection;
+  HE_Face mFace;
+  HEM_Extrude mExtrude;
+  HEM_Wireframe mWireframe;
+
+  List<PVector> mThreadPoints;
+
+  int mNextFaceIndex = 0;
+  List<PVector> mNextFaceDirection;
+  PVector mHeadPosition;
 
   ThreadLattice() {
     createLattice();
+
+    // the order we want to extrude in
+    // note -y is up b/c of Processing
+    PVector R = new PVector(1, 0, 0),
+            L = new PVector(-1, 0, 0),
+            U = new PVector(0, -1, 0),
+            D = new PVector(0, 1, 0),
+            F = new PVector(0, 0, 1),
+            B = new PVector(0, 0, -1);
+
+    mNextFaceDirection = new ArrayList<PVector>();
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(U.copy());    
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(B.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(L.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(U.copy());
+    mNextFaceDirection.add(F.copy());
+    mNextFaceDirection.add(R.copy());
+    mNextFaceDirection.add(D.copy());
+    mNextFaceDirection.add(R.copy());
+
+    mThreadPoints = new ArrayList<PVector>();
+    mThreadPoints.add(new PVector(0, 0, 0));
+
+    mHeadPosition = new PVector(0, 0, 0);
   }
   
   void draw(WB_Render3D render) {
+    stroke(255);
+    strokeWeight(4);
+    noFill();
+    emissive(255);
+    drawThread();
+
     fill(255);
     emissive(0);
     noStroke();
-    render.drawFaces(mesh);
+    strokeWeight(1);
+    render.drawFaces(mDynMesh);
+  }
+
+  void drawThread() {
+    beginShape(LINES);
+    for (int i = 0; i < mThreadPoints.size() - 1; i++) {
+      PVector a = mThreadPoints.get(i);
+      PVector b = mThreadPoints.get(i + 1);
+      for (int j = 0; j < 10; j++) {
+        float x1 = lerp(a.x, b.x, j * 0.1);
+        float y1 = lerp(a.y, b.y, j * 0.1);
+        float z1 = lerp(a.z, b.z, j * 0.1);
+        float x2 = lerp(a.x, b.x, (j + 1) * 0.1);
+        float y2 = lerp(a.y, b.y, (j + 1) * 0.1);
+        float z2 = lerp(a.z, b.z, (j + 1) * 0.1);
+        vertex(x1 + noise(i, j, frameCount), y1 + noise(i, j, frameCount), z1 + noise(i, j, frameCount));
+        vertex(x2 + noise(i, j + 1, frameCount), y2 + noise(i, j + 1, frameCount), z2 + noise(i, j + 1, frameCount));
+      }
+      // vertex(b.x, b.y, b.z);
+    }
+    endShape();
+
   }
   
   HE_Mesh getMesh() {
-    return mesh;
+    return mDynMesh;
   }
   
   void createLattice() {
+
     HEC_Cube creator = new HEC_Cube()
      .setRadius(10);
     
-    mesh = new HE_Mesh(creator);
-    
-    selection = new HE_Selection(mesh);
-    
-    // select a face from the initial mesh
-    HE_Face[] faces = mesh.getFacesAsArray();
-    mesh.deleteFace(faces[5]);
-    face = faces[3];
-    selection.add(face);
-  
-    // extrude the selection some # of times
-    extrude = new HEM_Extrude().setDistance(20);
-    for (int i = 0; i < 2; i++) {
-      mesh.modifySelected(extrude, selection);
+    mMesh = new HE_Mesh(creator);
+
+    mExtrude = new HEM_Extrude().setDistance(20);
+    mWireframe = new HEM_Wireframe().setStrutRadius(1.0).setStrutFacets(4).setMaximumStrutOffset(5).setTaper(false);
+    mSelection = new HE_Selection(mMesh);
+
+    mDynMesh = new HE_DynamicMesh(mMesh);
+    mDynMesh.add(mWireframe);
+    updateDynMesh();
+  }
+
+  void updateDynMesh() {
+    mDynMesh.setBaseMesh(mMesh);
+    mDynMesh.update();    
+  }
+
+  void getNextFaceFromFaces( List<HE_Face> faces, PVector direction ) {
+    for (HE_Face face : faces ) {
+      WB_Coord n = face.getFaceNormal();
+      if (n.xf() == direction.x && n.yf() == direction.y && n.zf() == direction.z) {
+        mFace = face;
+        return;
+      }
     }
-  
-    selection.clear();
-  
-    // pick a specific neighbor of the same face
-    List<HE_Face> neighbors = face.getNeighborFaces();
-    face = neighbors.get(0);
-    selection.add(face);
+  }
+
+  void expandLattice() {
     
+    PVector direction = mNextFaceDirection.get(mNextFaceIndex);
+    // if we're at the beginning, no face has been selected yet
+    if (mSelection.getOuterEdges().isEmpty()) {
+      // select a face from the initial mesh
+      getNextFaceFromFaces(mMesh.getFaces(), direction);
+    } else {  
+      // pick a specific neighbor of the same face
+      getNextFaceFromFaces(mFace.getNeighborFaces(), direction);
+    }
+
+    // update head position
+    mHeadPosition.add(PVector.mult(direction, 40));
+
+    // extend thread
+    mThreadPoints.add(mHeadPosition.copy());
+
+    mNextFaceIndex = (mNextFaceIndex + 1) % mNextFaceDirection.size();
+
+    mSelection.clear();
+    mSelection.add(mFace);
+  
     // extrude some # of times
     for (int j = 0; j < 2; j++) {
-      mesh.modifySelected(extrude, selection);
+      mMesh.modifySelected(mExtrude, mSelection);
     }
-  
-    selection.clear();
-  
-    // pick a specific neighbor of the same face
-    neighbors = face.getNeighborFaces();
-    face = neighbors.get(1);
-    selection.add(face);
-    
-    // extrude some # of times
-    for (int j = 0; j < 2; j++) {
-      mesh.modifySelected(extrude, selection);
-    }
-  
-    selection.clear();
-  
-    // pick a specific neighbor of the same face
-    neighbors = face.getNeighborFaces();
-    face = neighbors.get(3);
-    selection.add(face);
-    
-    // extrude some # of times
-    for (int j = 0; j < 2; j++) {
-      mesh.modifySelected(extrude, selection);
-    }
-  
-    selection.clear();
-  
-    // pick a specific neighbor of the same face
-    neighbors = face.getNeighborFaces();
-    face = neighbors.get(1);
-    selection.add(face);
-    
-    // extrude some # of times
-    for (int j = 0; j < 2; j++) {
-      mesh.modifySelected(extrude, selection);
-    }
-  
-    selection.clear();
-  
-    // pick a specific neighbor of the same face
-    neighbors = face.getNeighborFaces();
-    face = neighbors.get(3);
-    selection.add(face);
-    
-    // extrude some # of times
-    for (int j = 0; j < 1; j++) {
-      mesh.modifySelected(extrude, selection);
-    }
-  
+
     // delete the extra face
-    mesh.deleteFace(face);
+    // mesh.deleteFace(face);
   
     //clean-up mesh
-    mesh.clean();
-    
-    mesh.modify(new HEM_Wireframe().setStrutRadius(1.0).setStrutFacets(4).setMaximumStrutOffset(5).setTaper(false));
+    // mesh.clean(); 
 
+    updateDynMesh(); 
   }
+
+  PVector getHeadPosition() {
+    return mHeadPosition;
+  }
+
 };
