@@ -6,7 +6,8 @@ class ThreadLattice {
   HEM_Extrude mExtrude;
   HEM_Wireframe mWireframe;
 
-  List<PVector> mThreadPoints;
+  List<PVector> mThreadPoints, mUnraveledThreadPoints;
+  float mUnravelProgress = 0;
 
   int mNextFaceIndex = 0;
   List<PVector> mNextFaceDirection;
@@ -79,6 +80,8 @@ class ThreadLattice {
 
     mThreadPoints = new ArrayList<PVector>();
     mThreadPoints.add(new PVector(0, 0, 0));
+    mUnraveledThreadPoints = new ArrayList<PVector>();
+    mUnraveledThreadPoints.add(new PVector(0, 0, 0));
 
     mHeadPosition = new PVector(0, 0, 0);
   }
@@ -115,8 +118,12 @@ class ThreadLattice {
   void drawThread() {
     beginShape(LINES);
     for (int i = 0; i < mThreadPoints.size() - 1; i++) {
-      PVector a = mThreadPoints.get(i);
-      PVector b = mThreadPoints.get(i + 1);
+      PVector a0 = mThreadPoints.get(i);
+      PVector a1 = mUnraveledThreadPoints.get(i);
+      PVector b0 = mThreadPoints.get(i + 1);
+      PVector b1 = mUnraveledThreadPoints.get(i + 1);
+      PVector a = PVector.lerp(a0, a1, mUnravelProgress);
+      PVector b = PVector.lerp(b0, b1, mUnravelProgress);
       for (int j = 0; j < 10; j++) {
         float x1 = lerp(a.x, b.x, j * 0.1);
         float y1 = lerp(a.y, b.y, j * 0.1);
@@ -189,9 +196,8 @@ class ThreadLattice {
     mHeadPosition.add(PVector.mult(direction, 40));
 
     // extend thread
+    mUnraveledThreadPoints.add(new PVector(mThreadPoints.size() * 40, 0, 0));
     mThreadPoints.add(mHeadPosition.copy());
-
-    mNextFaceIndex = (mNextFaceIndex + 1) % mNextFaceDirection.size();
 
     mSelection.clear();
     mSelection.add(mFace);
@@ -206,10 +212,25 @@ class ThreadLattice {
     // set alpha to 0 and animate back in
     mLatticeAlpha = 0;
     mLatticeAlphaAni = Ani.to(this, 3.0, "mLatticeAlpha", 255.0);
+
+    mNextFaceIndex = (mNextFaceIndex + 1) % mNextFaceDirection.size();
+
+    if (mNextFaceIndex == 0 && mThreadPoints.size() > 1) {
+      // we're at the beginning again; unravel the thread
+      Ani.to(this, 60.0, "mUnravelProgress", 1.0);
+    }
   }
 
   PVector getHeadPosition() {
     return mHeadPosition;
+  }
+
+  WB_Coord getLookAt() {
+    if (mUnravelProgress == 0.0) {
+      return getMesh().getCenter();
+    } else {
+      return new WB_Point(0, 0, 0);
+    }
   }
 
 };

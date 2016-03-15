@@ -26,7 +26,7 @@ ParticleSystem ps;
 float rotateX = 0;
 float rotateY = 0;
 float offsetX = -5;
-float offsetZ = 80;
+double offsetZ = 80;
 float camRotateX = 0.0005;
 float camRotateY = 0.00025;
 float particleVelocityMult = 1.0;
@@ -89,12 +89,13 @@ void draw() {
 
 void updateLightsAndCamera(PVector geoLightPosition) {
   float[] currLookAt = cam.getLookAt();
-  WB_Coord center = threadLattice.getMesh().getCenter();
+  double currOffsetZ = cam.getDistance();
+  WB_Coord lookAt = threadLattice.getLookAt();
   cam.lookAt(
-    lerp(currLookAt[0], center.xf(), 0.05), 
-    lerp(currLookAt[1], center.yf(), 0.05), 
-    lerp(currLookAt[2], center.zf(), 0.05), 
-    offsetZ, 
+    lerp(currLookAt[0], lookAt.xf(), 0.05), 
+    lerp(currLookAt[1], lookAt.yf(), 0.05), 
+    lerp(currLookAt[2], lookAt.zf(), 0.05), 
+    lerp(currOffsetZ, offsetZ, 0.05),
     0
     );
   // cam.rotateX(camRotateX);
@@ -154,4 +155,8 @@ void oscEvent(OscMessage theOscMessage) {
   }
 
   // theOscMessage.print();
+}
+
+double lerp(double start, double end, double amt){
+ return start + (end-start)*amt; 
 }

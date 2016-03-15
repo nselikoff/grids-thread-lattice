@@ -40,9 +40,9 @@ class GeoLight {
   
   void setPosition(PVector position) {
     nextPosition = position;
-    Ani.to(this, 1.5, "lightPositionX", nextPosition.x);
-    Ani.to(this, 1.5, "lightPositionY", nextPosition.y);
-    Ani.to(this, 1.5, "lightPositionZ", nextPosition.z);    
+    Ani.to(this, 0.5, "lightPositionX", nextPosition.x);
+    Ani.to(this, 0.5, "lightPositionY", nextPosition.y);
+    Ani.to(this, 0.5, "lightPositionZ", nextPosition.z);
   }
   
   PVector getPosition() {
