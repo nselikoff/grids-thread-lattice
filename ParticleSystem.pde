@@ -15,7 +15,9 @@ class ParticleSystem {
   void addParticle() {
     //if (rate > 0.5) {
       for (int i = 0; i < int(rate*20); i++) {
-        particles.add(new Particle(origin));
+        if (random(0, 1) > 0.9) {
+          particles.add(new Particle(origin));
+        }
       }
     //} else {
     //}

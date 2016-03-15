@@ -89,15 +89,17 @@ void draw() {
 
 void updateLightsAndCamera(PVector geoLightPosition) {
   float[] currLookAt = cam.getLookAt();
+  WB_Coord center = threadLattice.getMesh().getCenter();
   cam.lookAt(
-    lerp(currLookAt[0], geoLightPosition.x + offsetX, 0.05), 
-    lerp(currLookAt[1], geoLightPosition.y, 0.05), 
-    lerp(currLookAt[2], geoLightPosition.z, 0.05), 
+    lerp(currLookAt[0], center.xf(), 0.05), 
+    lerp(currLookAt[1], center.yf(), 0.05), 
+    lerp(currLookAt[2], center.zf(), 0.05), 
     offsetZ, 
     0
     );
-  cam.rotateX(camRotateX);
-  cam.rotateY(camRotateY);
+  // cam.rotateX(camRotateX);
+  // cam.rotateY(camRotateY);
+  cam.rotateY(0.001);
 
   directionalLight(64, 64, 64, 1, 2, -1);
   directionalLight(64, 64, 64, -1, -2, 1);
@@ -135,6 +137,7 @@ void oscEvent(OscMessage theOscMessage) {
     offsetZ = map(floatVal, 0, 1, 10, 500);
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
+    threadLattice.setLatticeAlphaMultiplier(floatVal);
   }
   else if (addr.equals("/FromVDMX/Slider6")) {
   }

@@ -12,6 +12,9 @@ class ThreadLattice {
   List<PVector> mNextFaceDirection;
   PVector mHeadPosition;
 
+  float mLatticeAlpha = 0, mLatticeAlphaMultiplier = 1;
+  Ani mLatticeAlphaAni;
+
   ThreadLattice() {
     createLattice();
 
@@ -81,17 +84,32 @@ class ThreadLattice {
   }
   
   void draw(WB_Render3D render) {
+    // Set DepthBufferEnable and DepthBufferWriteEnable to true
+    hint(ENABLE_DEPTH_TEST);
+
+    // Draw all opaque geometry
     stroke(255);
     strokeWeight(4);
     noFill();
     emissive(255);
     drawThread();
 
-    fill(255);
+    // This is a compromise to get the thread to show through the faded/fading lattice, but have it properly drawn otherwise
+    if (mLatticeAlpha * mLatticeAlphaMultiplier < 64.0) {
+      // Leave DepthBufferEnable set to true, but change DepthBufferWriteEnable to false
+      hint(DISABLE_DEPTH_TEST);
+    }
+
+    // Sort alpha blended objects by distance from the camera, then draw them in order from back to front
+    fill(255, mLatticeAlpha * mLatticeAlphaMultiplier);
     emissive(0);
     noStroke();
     strokeWeight(1);
-    render.drawFaces(mDynMesh);
+    
+    // avoid a few frames of the underlying mesh being drawn before the modifiers are done updating
+    if(mDynMesh.getNumberOfFaces() > 200 * mNextFaceIndex) {
+      render.drawFaces(mDynMesh);
+    }
   }
 
   void drawThread() {
@@ -117,6 +135,10 @@ class ThreadLattice {
   
   HE_Mesh getMesh() {
     return mDynMesh;
+  }
+
+  void setLatticeAlphaMultiplier(float alpha) {
+    mLatticeAlphaMultiplier = alpha;
   }
   
   void createLattice() {
@@ -151,6 +173,7 @@ class ThreadLattice {
   }
 
   void expandLattice() {
+    // println("expandLattice " + (mNextFaceIndex + 1));
     
     PVector direction = mNextFaceDirection.get(mNextFaceIndex);
     // if we're at the beginning, no face has been selected yet
@@ -178,13 +201,11 @@ class ThreadLattice {
       mMesh.modifySelected(mExtrude, mSelection);
     }
 
-    // delete the extra face
-    // mesh.deleteFace(face);
-  
-    //clean-up mesh
-    // mesh.clean(); 
+    updateDynMesh();
 
-    updateDynMesh(); 
+    // set alpha to 0 and animate back in
+    mLatticeAlpha = 0;
+    mLatticeAlphaAni = Ani.to(this, 3.0, "mLatticeAlpha", 255.0);
   }
 
   PVector getHeadPosition() {

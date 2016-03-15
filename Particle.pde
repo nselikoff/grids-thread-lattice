@@ -12,7 +12,7 @@ class Particle {
     velocity = new PVector(random(-0.1,0.1),random(-0.1,0.1),random(-0.1,0.1));
     location = l.copy();
     lifespan = 255.0;
-    pulsePhase = random(0.05, 0.5);
+    pulsePhase = random(0.05, 0.1);
   }
 
   void run() {
@@ -39,8 +39,8 @@ class Particle {
     //noFill();
     pushMatrix();
     translate(location.x, location.y, location.z);
-    rotateX(lifespan * 0.1);
-    rotateY(lifespan * 0.1);
+    rotateX(lifespan * 0.01);
+    rotateY(lifespan * 0.01);
     box(lifespan / 255);
     popMatrix();
   }
