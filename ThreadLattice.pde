@@ -16,7 +16,12 @@ class ThreadLattice {
   float mLatticeAlpha = 0, mLatticeAlphaMultiplier = 1;
   Ani mLatticeAlphaAni;
 
+  PShader mLatticeShader;
+
   ThreadLattice() {
+    mLatticeShader = loadShader("latticefrag.glsl", "latticevert.glsl");
+    // mLatticeShader.set("fraction", 1.0);
+
     createLattice();
 
     // the order we want to extrude in
@@ -111,7 +116,9 @@ class ThreadLattice {
     
     // avoid a few frames of the underlying mesh being drawn before the modifiers are done updating
     if(mDynMesh.getNumberOfFaces() > 200 * mNextFaceIndex) {
+      // shader(mLatticeShader);
       render.drawFaces(mDynMesh);
+      // resetShader();
     }
   }
 

@@ -21,7 +21,7 @@ class GeoLight {
   
   void draw() {
     lightFalloff(0,0,0.005);
-    float intensity = geoLight.getIntensity();
+    float intensity = getIntensity();
     pointLight(intensity, intensity, intensity, lightPositionX, lightPositionY, lightPositionZ);
     
     pushMatrix();
