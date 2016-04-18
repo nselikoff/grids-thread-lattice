@@ -20,7 +20,7 @@ class GeoLight {
   }
   
   void draw() {
-    lightFalloff(0,0,0.005);
+    lightFalloff(0,0,0.0025);
     float intensity = getIntensity();
     pointLight(intensity, intensity, intensity, lightPositionX, lightPositionY, lightPositionZ);
     

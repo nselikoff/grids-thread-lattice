@@ -27,8 +27,6 @@ float rotateX = 0;
 float rotateY = 0;
 float offsetX = -5;
 double offsetZ = 80;
-float camRotateX = 0.0005;
-float camRotateY = 0.00025;
 float particleVelocityMult = 1.0;
 
 //int screenWidth = 1280, screenHeight = 289;
@@ -98,12 +96,10 @@ void updateLightsAndCamera(PVector geoLightPosition) {
     lerp(currOffsetZ, offsetZ, 0.05),
     0
     );
-  // cam.rotateX(camRotateX);
-  // cam.rotateY(camRotateY);
   cam.rotateY(0.001);
 
-  directionalLight(64, 64, 64, 1, 2, -1);
-  directionalLight(64, 64, 64, -1, -2, 1);
+  directionalLight(16, 32, 32, 1, 3, -1);
+  directionalLight(64, 32, 16, -1, -3, 1);
 }
 
 void nextPosition() {
@@ -128,8 +124,6 @@ void oscEvent(OscMessage theOscMessage) {
   }
   else if (addr.equals("/FromVDMX/Slider2")) {
     ps.setRate(floatVal);
-    camRotateX = map(floatVal, 0, 1, 0.0005, 0.05);
-    camRotateY = map(floatVal, 0, 1, 0.00025, 0.025); 
   }
   else if (addr.equals("/FromVDMX/Slider3")) {
     particleVelocityMult = map(floatVal, 0, 1, 1, 15);
@@ -160,3 +154,7 @@ void oscEvent(OscMessage theOscMessage) {
 double lerp(double start, double end, double amt){
  return start + (end-start)*amt; 
 }
+
+// void keyPressed(KeyEvent e) {
+//   nextPosition();
+// }
