@@ -123,22 +123,22 @@ void oscEvent(OscMessage theOscMessage) {
   if (addr.equals("/FromVDMX/Slider1")) {
   }
   else if (addr.equals("/FromVDMX/Slider2")) {
-    ps.setRate(floatVal);
   }
   else if (addr.equals("/FromVDMX/Slider3")) {
-    particleVelocityMult = map(floatVal, 0, 1, 1, 15);
   }
   else if (addr.equals("/FromVDMX/Slider4")) {
-    offsetZ = map(floatVal, 0, 1, 10, 500);
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
-    threadLattice.setLatticeAlphaMultiplier(floatVal);
+    ps.setRate(floatVal);
   }
   else if (addr.equals("/FromVDMX/Slider6")) {
+    particleVelocityMult = map(floatVal, 0, 1, 1, 5);
   }
   else if (addr.equals("/FromVDMX/Slider7")) {
+    offsetZ = map(floatVal, 0, 1, 10, 500);
   }
   else if (addr.equals("/FromVDMX/Slider8")) {
+    threadLattice.setLatticeAlphaMultiplier(floatVal);
   }
   else if (addr.equals("/FromVDMX/S1")) {
      nextPosition(); 
