@@ -9,7 +9,7 @@ class ParticleSystem {
   ParticleSystem(PVector location) {
     setOrigin(location);
     particles = new ArrayList<Particle>();
-    rate = 0;
+    rate = 0.64;
   }
 
   void addParticle() {

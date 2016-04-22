@@ -13,7 +13,7 @@ class ThreadLattice {
   List<PVector> mNextFaceDirection;
   PVector mHeadPosition;
 
-  float mLatticeAlpha = 0, mLatticeAlphaMultiplier = 1;
+  float mLatticeAlpha = 0, mLatticeAlphaMultiplier = 0;
   Ani mLatticeAlphaAni;
 
   PShader mLatticeShader;

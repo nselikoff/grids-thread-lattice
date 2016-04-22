@@ -26,8 +26,8 @@ ParticleSystem ps;
 float rotateX = 0;
 float rotateY = 0;
 float offsetX = -5;
-double offsetZ = 80;
-float particleVelocityMult = 1.0;
+double offsetZ = 10;
+float particleVelocityMult = 1.72;
 
 //int screenWidth = 1280, screenHeight = 289;
 int screenWidth = 1920, screenHeight = 434;
@@ -40,7 +40,7 @@ void settings() {
 void setup() {
   
   // Create syhpon server to send frames out.
-  server = new SyphonServer(this, "sketch_thread_lattice");
+  server = new SyphonServer(this, "thread_lattice");
 
   smooth(8);
   frameRate(60);
@@ -129,10 +129,10 @@ void oscEvent(OscMessage theOscMessage) {
   else if (addr.equals("/FromVDMX/Slider4")) {
   }
   else if (addr.equals("/FromVDMX/Slider5")) {
-    ps.setRate(floatVal);
+    // ps.setRate(floatVal);
   }
   else if (addr.equals("/FromVDMX/Slider6")) {
-    particleVelocityMult = map(floatVal, 0, 1, 1, 5);
+    // particleVelocityMult = map(floatVal, 0, 1, 1, 5);
   }
   else if (addr.equals("/FromVDMX/Slider7")) {
     offsetZ = map(floatVal, 0, 1, 10, 500);
